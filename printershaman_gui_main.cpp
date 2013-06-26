@@ -14,7 +14,7 @@ printershaman_gui_main::printershaman_gui_main(QWidget *parent)
 {
 
     //Set build variables
-    version_number = "0.0.11";
+    version_number = "1.0.0";
 
     //Define the main windows title
     window_title_static = "Printer Shaman (v"+version_number+") by Xenland";
@@ -41,13 +41,11 @@ void printershaman_gui_main::beginPrinterShaman(){
     //Define keep checking schedule
     keep_checking_schedule = 1;
 
-    //Define current working executable directory.
-    current_working_directory = QDir::currentPath();
-
     //Open SQLite file for querying.
-    print_schedule_db = QSqlDatabase::addDatabase("QSQLITE");
-    print_schedule_db.setDatabaseName(current_working_directory+"/db/print_schedule");
+    print_schedule_db = QSqlDatabase::addDatabase("QSQLITE", "schedule");
+    print_schedule_db.setDatabaseName("./db/print_schedule");
     print_schedule_db.open();
+
 
     //Start webview for printing canvas
     fileview_web = new QWebView();
@@ -61,20 +59,20 @@ void printershaman_gui_main::beginPrinterShaman(){
 
             //Attach screens (widgets) to the main layout
                 //Main Boot screen
-                main_window_layout_bootscreen = new QWidget();
+                main_window_layout_bootscreen = new QWidget(0);
                 main_window_layout->addWidget(main_window_layout_bootscreen);
                     //Init main boot screen
                     initMainBootScreen();
 
 
                 //Add a new scheduled print
-                main_window_layout_addNewScheduledPrintScreen = new QWidget();
+                main_window_layout_addNewScheduledPrintScreen = new QWidget(0);
                 main_window_layout->addWidget(main_window_layout_addNewScheduledPrintScreen);
                     //Init "add a new scheduled print"
                     init_addNewScheduledPrint_screen();
 
                 //Add "Printing Schedule" to show the printing schedule from the db file and edit it.
-                main_window_layout_printingScheduleScreen = new QWidget();
+                main_window_layout_printingScheduleScreen = new QWidget(0);
                 main_window_layout->addWidget(main_window_layout_printingScheduleScreen);
                     //Init "show printing schedule"
                     init_printingSchedule_screen();
@@ -97,7 +95,7 @@ void printershaman_gui_main::beginPrinterShaman(){
     main_window->setWindowTitle("Booting Up | "+window_title_static);
 
     //Set window icon options
-    QString main_window_icon_dir_text       = current_working_directory+"/images/icon_printer_shaman_logo_app_size.png";
+    QString main_window_icon_dir_text       = ":/images/icon_printer_shaman_logo_app_size";
     QImage main_window_icon_images          = QImage(main_window_icon_dir_text);
     QIcon main_window_icon                  = QIcon(QPixmap::fromImage(main_window_icon_images));
     main_window->setWindowIcon(main_window_icon);
@@ -144,7 +142,7 @@ void printershaman_gui_main::beginPrinterShaman(){
                     /** ** ** ** ** ** ** ** ** **
                      **  "Printer Shaman" Logo  **/
                         QLabel * logo_imagelabel    = new QLabel();
-                        QString logo_dir_text       = current_working_directory+"/images/printer_shaman_logo_app_size.png";
+                        QString logo_dir_text       = ":/images/printer_shaman_logo_app_size";
                         QImage logo_image(logo_dir_text);
 
                         if(logo_image.isNull() == true){
@@ -271,6 +269,58 @@ void printershaman_gui_main::beginPrinterShaman(){
              main_window->move(app_new_x, app_new_y);
          }
 
+         void printershaman_gui_main::printingSchedule_autoreposition(){
+             //Set Size & Position options
+                 //Get screen size.
+                 QDesktopWidget * desktop_information     = QApplication::desktop();
+                 QRect client_screen_geometry_info       = desktop_information->availableGeometry();
+
+                 int screen_width    = client_screen_geometry_info.width();
+                 int screen_height   = client_screen_geometry_info.height();
+
+                 int app_width   = 800;
+                 int app_height  = 300;
+
+                 //Move window into middle of screen (proportionatly as possible)
+                 //(screen width / 2) - (app width / 2)
+                 int app_new_x   = (screen_width/2) - (app_width/2);
+                 int app_new_y   = (screen_height/2) - (app_height/2);
+
+                     //If the new y(+app height) is greater than window height make it snap to the window bottom
+                     if((app_new_y+app_height) >= screen_height){
+                         app_new_y = 0;
+                     }
+
+             main_window->resize(app_width, app_height);
+             main_window->move(app_new_x, app_new_y);
+         }
+
+         void printershaman_gui_main::addNewSchedule_autoReposition(){
+             //Set Size & Position options
+                 //Get screen size.
+                 QDesktopWidget * desktop_information     = QApplication::desktop();
+                 QRect client_screen_geometry_info       = desktop_information->availableGeometry();
+
+                 int screen_width    = client_screen_geometry_info.width();
+                 int screen_height   = client_screen_geometry_info.height();
+
+                 int app_width   = 800;
+                 int app_height  = 500;
+
+                 //Move window into middle of screen (proportionatly as possible)
+                 //(screen width / 2) - (app width / 2)
+                 int app_new_x   = (screen_width/2) - (app_width/2);
+                 int app_new_y   = (screen_height/2) - (app_height/2);
+
+                     //If the new y(+app height) is greater than window height make it snap to the window bottom
+                     if((app_new_y+app_height) >= screen_height){
+                         app_new_y = 0;
+                     }
+
+             main_window->resize(app_width, app_height);
+             main_window->move(app_new_x, app_new_y);
+         }
+
 
 
         /** ** ** ** ** ** ** ** ** ** **
@@ -280,10 +330,10 @@ void printershaman_gui_main::beginPrinterShaman(){
             main_window_layout_addNewScheduledPrintScreen->setLayout(addNewScheduledPrint_layout);
             main_window_layout_addNewScheduledPrintScreen->hide();
 
-                /** ** ** ** ** ** ** ** ** **
-                 **  "Printer Shaman" Logo  **/
+                /** ** ** ** ** ** ** ** ** ** ** ** ** **
+                 **  "Printer Shaman" Add New Schedule  **/
                     QLabel * logo_imagelabel    = new QLabel();
-                    QString logo_dir_text       = current_working_directory+"/images/add_new_schedule.png";
+                    QString logo_dir_text       = ":/images/add_new_schedule";
                     QImage logo_image(logo_dir_text);
 
                     if(logo_image.isNull() == true){
@@ -488,6 +538,7 @@ void printershaman_gui_main::beginPrinterShaman(){
                     addNewScheduledPrint_layout->addWidget(add_cancel_button_group_widget, 8, 0, 2, 1);
 
                         QPushButton * add_schedule_button = new QPushButton("Add Schedule");
+                        add_schedule_button->setStyleSheet("QPushButton{padding:1em;}");
                         add_schedule_button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
                             //Add button to the add_cancel_button_group_grid (layout)
@@ -497,6 +548,7 @@ void printershaman_gui_main::beginPrinterShaman(){
                             connect(add_schedule_button, SIGNAL(clicked()), this, SLOT(sync_schedule_to_db()));
 
                         QPushButton * cancel_add_schedule_button = new QPushButton("Cancel");
+                        cancel_add_schedule_button->setStyleSheet("QPushButton{padding:1em;}");
                         cancel_add_schedule_button->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
                             //Add button to the add_cancel_button_group_grid (layout)
@@ -559,13 +611,15 @@ void printershaman_gui_main::beginPrinterShaman(){
                         }
 
             //Reposition
-            mainWindow_autoreposition();
+            addNewSchedule_autoReposition();
         }
 
 
         /** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **
          **   SLOT, "Sync" new schedule to the database  **/
         void printershaman_gui_main::sync_schedule_to_db(){
+
+            /** Make sure all the required fields are at minimum filled out, then confirm or alert the user of success or failure **/
 
             if(print_schedule_db.isOpen()){
                 //Create query string
@@ -591,6 +645,7 @@ void printershaman_gui_main::beginPrinterShaman(){
                         QString url_location_string = url_to_print_input->displayText();
 
                         //Days of the week
+                            int days_of_week_valid = 0;
                             int day_monday      = days_of_week_checkbox_monday->isChecked();
                             int day_tuesday     = days_of_week_checkbox_tuesday->isChecked();
                             int day_wednesday   = days_of_week_checkbox_wednesday->isChecked();
@@ -599,7 +654,13 @@ void printershaman_gui_main::beginPrinterShaman(){
                             int day_saturday    = days_of_week_checkbox_saturday->isChecked();
                             int day_sunday      = days_of_week_checkbox_sunday->isChecked();
 
+                                //Check if day of the week is valid.
+                                if(day_monday == 1 || day_tuesday == 1 || day_wednesday == 1 || day_thursday == 1 || day_friday == 1 || day_saturday == 1 || day_sunday == 1){
+                                     days_of_week_valid = 1;
+                                }
+
                        //Months of the year
+                            int months_of_year_valid = 0;
                             int month_january   = month_of_the_year_checkbox_january->isChecked();
                             int month_feburary  = month_of_the_year_checkbox_february->isChecked();
                             int month_march     = month_of_the_year_checkbox_march->isChecked();
@@ -613,6 +674,10 @@ void printershaman_gui_main::beginPrinterShaman(){
                             int month_nov       = month_of_the_year_checkbox_november->isChecked();
                             int month_dec       = month_of_the_year_checkbox_december->isChecked();
 
+                                //Check if months of the year is valid.
+                                if(month_january == 1 || month_feburary == 1 || month_march == 1 || month_april == 1 || month_may == 1 || month_june == 1 || month_july == 1 || month_august == 1 || month_sep == 1 || month_oct == 1 || month_nov == 1 || month_dec == 1){
+                                    months_of_year_valid = 1;
+                                }
 
                        //Hour
                             int hour_military   =  time_of_day_to_print_hours_input->displayText().toInt();
@@ -623,90 +688,141 @@ void printershaman_gui_main::beginPrinterShaman(){
                        //Num of copies
                             int num_of_copies   = how_many_to_print_input->displayText().toInt();
 
-                QSqlQuery insert_query;
-                bool insert_success = false;
-                insert_success = insert_query.exec(
-                                query_string
-                                .arg(query_secondsTimestamp)
-                                .arg(printer_selected_title)
-                                .arg(url_location_string)
-                                .arg(day_monday)
-                                .arg(day_tuesday)
-                                .arg(day_wednesday)
-                                .arg(day_thursday)
-                                .arg(day_friday)
-                                .arg(day_saturday)
-                                .arg(day_sunday)
-                                .arg(month_january)
-                                .arg(month_feburary)
-                                .arg(month_march)
-                                .arg(month_april)
-                                .arg(month_may)
-                                .arg(month_june)
-                                .arg(month_july)
-                                .arg(month_august)
-                                .arg(month_sep)
-                                .arg(month_oct)
-                                .arg(month_nov)
-                                .arg(month_dec)
-                                .arg(hour_military)
-                                .arg(minutes)
-                                .arg(num_of_copies)
-                            );
-                if(insert_success == true){
-                    //Set newly scheduled print
-                    successfull_add_label->setText("Your scheduled print has been added!");
-                    successfull_add_label->setFixedHeight(35);
-                        //Create new font style
-                        QFont successfull_add_label_font_style("Arial", 15);
+                //Check if everything is valid before adding to the schedule
+                if(months_of_year_valid == 1 && days_of_week_valid == 1 && num_of_copies >= 1 && minutes >= 0 && hour_military >= 0){
+                    QSqlQuery insert_query(print_schedule_db);
+                    bool insert_success = false;
+                    insert_success = insert_query.exec(
+                                    query_string
+                                    .arg(query_secondsTimestamp)
+                                    .arg(printer_selected_title)
+                                    .arg(url_location_string)
+                                    .arg(day_monday)
+                                    .arg(day_tuesday)
+                                    .arg(day_wednesday)
+                                    .arg(day_thursday)
+                                    .arg(day_friday)
+                                    .arg(day_saturday)
+                                    .arg(day_sunday)
+                                    .arg(month_january)
+                                    .arg(month_feburary)
+                                    .arg(month_march)
+                                    .arg(month_april)
+                                    .arg(month_may)
+                                    .arg(month_june)
+                                    .arg(month_july)
+                                    .arg(month_august)
+                                    .arg(month_sep)
+                                    .arg(month_oct)
+                                    .arg(month_nov)
+                                    .arg(month_dec)
+                                    .arg(hour_military)
+                                    .arg(minutes)
+                                    .arg(num_of_copies)
+                                );
+                    if(insert_success == true){
+                        //Set newly scheduled print
+                        successfull_add_label->setText("Your scheduled print has been added!");
+                        successfull_add_label->setFixedHeight(35);
+                            //Create new font style
+                            QFont successfull_add_label_font_style("Arial", 15);
 
-                    successfull_add_label->setFont(successfull_add_label_font_style);
-                    successfull_add_label->show();
+                        successfull_add_label->setFont(successfull_add_label_font_style);
+                        successfull_add_label->show();
 
-                    //Show main boot screen
-                    showMainBootScreen();
+                        //Show main boot screen
+                        showMainBootScreen();
+                    }
+                }else{
+                    //Input error happened, alert the user that they need some more information to fill out.
+                    QDialog * input_error = new QDialog(0);
+                    QVBoxLayout * input_error_grid = new QVBoxLayout(0);
+                    input_error->setLayout(input_error_grid);
+
+                    //Add labels per error message
+                    if(days_of_week_valid == 0){
+                        //Add days of week error
+                        QLabel * days_of_week_error = new QLabel("Please check atleast one day of the week.");
+                        input_error_grid->addWidget(days_of_week_error);
+                    }
+                    if(months_of_year_valid == 0){
+                        //Add months of the year error
+                        QLabel * months_of_the_year_error = new QLabel("Please check at least one month of the year.");
+                        input_error_grid->addWidget(months_of_the_year_error);
+                    }
+                    if(num_of_copies <= 0){
+                        //Add num of copies error
+                        QLabel * num_of_copies_error = new QLabel("Please type in the number of copies you wish to have printed.");
+                        input_error_grid->addWidget(num_of_copies_error);
+                    }
+                    if(hour_military <= 0 || hour_military >= 24){
+                        //Add hour error
+                        QLabel * hour_error = new QLabel("Please type in the hour in military time (add 12 for PM)");
+                        input_error_grid->addWidget(hour_error);
+                    }
+                    if(minutes <= 0 || minutes >= 60){
+                        //Add minutes error
+                        QLabel * minutes_error = new QLabel("Please type in a minute that is less then 60 or greater or equal to zero");
+                        input_error_grid->addWidget(minutes_error);
+                    }
+
+                    //Show error dialog box
+                    input_error->show();
                 }
-
+            }else{
+                qDebug() << "DB NOT OPEN";
             }
         }
 
         /** ** ** ** ** ** ** ** ** ** ** ** **
          ** SLOT, "Init Printing Schedule"   **/
         void printershaman_gui_main::init_printingSchedule_screen(){
-            QGridLayout * printingSchedule_layout = new QGridLayout();
+            printingSchedule_layout = new QGridLayout();
             main_window_layout_printingScheduleScreen->setLayout(printingSchedule_layout);
-            main_window_layout_printingScheduleScreen->hide();
 
             //Attach table view.
             printingSchedule_tableview = new QTableView();
                 printingSchedule_tableview->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-            printingSchedule_standarditemmodel = new QStandardItemModel(0, 7);
-                printingSchedule_standarditemmodel->setHorizontalHeaderItem(0, new QStandardItem(QString("ID#")));
+            printingSchedule_standarditemmodel = new QStandardItemModel(0, 6);
+                printingSchedule_standarditemmodel->setHorizontalHeaderItem(0, new QStandardItem(QString("#")));
                 printingSchedule_standarditemmodel->setHorizontalHeaderItem(1, new QStandardItem(QString("Printer Name")));
                 printingSchedule_standarditemmodel->setHorizontalHeaderItem(2, new QStandardItem(QString("Copies")));
                 printingSchedule_standarditemmodel->setHorizontalHeaderItem(3, new QStandardItem(QString("URL/File Location")));
                 printingSchedule_standarditemmodel->setHorizontalHeaderItem(4, new QStandardItem(QString("Daily Time")));
-                printingSchedule_standarditemmodel->setHorizontalHeaderItem(5, new QStandardItem(QString("Weekly Times")));
-                printingSchedule_standarditemmodel->setHorizontalHeaderItem(6, new QStandardItem(QString("Monthly Times")));
+                printingSchedule_standarditemmodel->setHorizontalHeaderItem(5, new QStandardItem(QString("Months")));
 
 
                 printingSchedule_tableview->setModel(printingSchedule_standarditemmodel);
 
-            printingSchedule_layout->addWidget(printingSchedule_tableview, 0, 0);
+                //Tableview properties
+                printingSchedule_tableview->resizeColumnsToContents();
 
-            //Add "Remove" button
-            QPushButton * remove_row = new QPushButton("Remove Selected Row");
-            printingSchedule_layout->addWidget(remove_row);
+            printingSchedule_layout->addWidget(printingSchedule_tableview, 0,0, 1,1, Qt::AlignTop);
 
-            QObject::connect(remove_row, SIGNAL(clicked()), this, SLOT(slot_removeSelectedPrintingRow()));
+            //Group "remove" and "Back to main menu" button in a VBox
+            group_remove_mainmenu_btn_holder = new QWidget(0);
+            group_remove_mainmenu_btn_layout = new QVBoxLayout(0);
+            group_remove_mainmenu_btn_holder->setLayout(group_remove_mainmenu_btn_layout);
+            printingSchedule_layout->addWidget(group_remove_mainmenu_btn_holder, 0,1, 1,1, Qt::AlignTop);
+
+                //Add "Remove" button
+                remove_row = new QPushButton("Remove Selected Row");
+                remove_row->setStyleSheet("QPushButton{padding:1em;}");
+                group_remove_mainmenu_btn_layout->addWidget(remove_row);
+
+                QObject::connect(remove_row, SIGNAL(clicked()), this, SLOT(slot_removeSelectedPrintingRow()));
 
 
-            //Add "Main Menu" button
-            QPushButton * back_to_main_menu = new QPushButton("Back to Main Menu");
-            printingSchedule_layout->addWidget(back_to_main_menu);
+                //Add "Main Menu" button
+                back_to_main_menu = new QPushButton("Back to Main Menu");
+                back_to_main_menu->setStyleSheet("QPushButton{padding:1em;}");
+                group_remove_mainmenu_btn_layout->addWidget(back_to_main_menu);
 
             QObject::connect(back_to_main_menu, SIGNAL(clicked()), this, SLOT(slot_showMainBootScreen()));
+
+            //Hide
+            main_window_layout_printingScheduleScreen->hide();
         }
 
         /** ** ** ** ** ** ** ** ** ** ** ** **
@@ -717,6 +833,9 @@ void printershaman_gui_main::beginPrinterShaman(){
             //Hide all major layouts.
             hideAllMajorLayouts();
 
+            //Show printing schedule screen
+            main_window_layout_printingScheduleScreen->show();
+
             //Set title
             main_window->setWindowTitle("Printing Schedule | "+window_title_static);
 
@@ -724,20 +843,17 @@ void printershaman_gui_main::beginPrinterShaman(){
                 //Query printing schedule from the sqlite database.
 
                     if(print_schedule_db.isOpen()){
+                        qDebug() << "DB IS OPENED";
                         //Clear table view
-                        printingSchedule_standarditemmodel->clear();
-                            printingSchedule_standarditemmodel->setHorizontalHeaderItem(0, new QStandardItem(QString("ID#")));
-                            printingSchedule_standarditemmodel->setHorizontalHeaderItem(1, new QStandardItem(QString("Printer Name")));
-                            printingSchedule_standarditemmodel->setHorizontalHeaderItem(2, new QStandardItem(QString("Copies")));
-                            printingSchedule_standarditemmodel->setHorizontalHeaderItem(3, new QStandardItem(QString("URL/File Location")));
-                            printingSchedule_standarditemmodel->setHorizontalHeaderItem(4, new QStandardItem(QString("Daily Time")));
-                            printingSchedule_standarditemmodel->setHorizontalHeaderItem(5, new QStandardItem(QString("Weekly Times")));
-                            printingSchedule_standarditemmodel->setHorizontalHeaderItem(6, new QStandardItem(QString("Monthly Times")));
+                        //printingSchedule_standarditemmodel->removeRows(0, printingSchedule_standarditemmodel->rowCount(), QModelIndex());
 
                         QString query_string = "SELECT `id`, `timestamp_created`, `num_of_copies`, `printer_name`, `url_location`, `day_mon`, `day_tue`, `day_wed`, `day_thur`, `day_fri`, `day_sat`, `day_sun`, `month_jan`, `month_feb`, `month_march`, `month_april`, `month_may`, `month_june`, `month_july`, `month_aug`, `month_sep`, `month_oct`, `month_nov`, `month_dec`, `hour`, `minutes` FROM `schedule_index` ORDER BY `id` ASC";
-                        QSqlQuery select_query;
+                        QSqlQuery select_query(print_schedule_db);
                         bool select_success = false;
                         select_success = select_query.exec(query_string);
+                        qDebug() << "SELECT ERROR (IF ANY): " << select_query.lastError();
+                        qDebug() << select_success;
+
                         if(select_success == true){
                             while(select_query.next()){
                                 qDebug() << "---------------------------";
@@ -746,11 +862,11 @@ void printershaman_gui_main::beginPrinterShaman(){
 
                                 QList<QStandardItem *> list_of_schedule_details;
                                     //Item id
-                                    QStandardItem *item_id = new QStandardItem(select_query.value("id").toString());
+                                    QStandardItem * item_id = new QStandardItem(select_query.value("id").toString());
                                     list_of_schedule_details.append(item_id);
 
                                     //Printername
-                                    QStandardItem *printername = new QStandardItem(select_query.value("printer_name").toString());
+                                    QStandardItem * printername = new QStandardItem(select_query.value("printer_name").toString());
                                     list_of_schedule_details.append(printername);
 
                                     //Num of Copies
@@ -772,14 +888,28 @@ void printershaman_gui_main::beginPrinterShaman(){
 
                                 printingSchedule_standarditemmodel->appendRow(list_of_schedule_details);
                             }
-                         }
+                         }else{
+                            qDebug() << "FAILED TO QUERY FOR SCHEDULE!!!";
+                        }
+                    }else{
+                        qDebug() << "DB IS NOT OPENED";
+                        //Display a popup message notifying that the database can't be found at this time.
+                        QDialog * database_not_found_dialog = new QDialog(0);
+                        database_not_found_dialog->setWindowTitle("Database Load Error | Printer Shaman");
+                        database_not_found_dialog->setModal(1);
+                        QGridLayout * database_not_found_layout = new QGridLayout(0);
+                        database_not_found_dialog->setLayout(database_not_found_layout);
+
+                            //Add label displaying the error message
+                            QLabel * error_mesage = new QLabel("<span style='color:red;'><h3>Database Error</h3></span>We are sorry, The database could not be loaded at this time.<br/>Please, notify the author.");
+                            database_not_found_layout->addWidget(error_mesage, 0,0, 1,1);
+
+                       //Show error message
+                            database_not_found_dialog->show();
                     }
 
-            //Show printing schedule screen
-            main_window_layout_printingScheduleScreen->show();
-
             //Reposition
-            mainWindow_autoreposition();
+            printingSchedule_autoreposition();
         }
 
         void printershaman_gui_main::checkPrintSchedule_loop(){
@@ -817,7 +947,7 @@ void printershaman_gui_main::beginPrinterShaman(){
                 int lastPrint_dateTimestamp = current_dateTimestamp.toTime_t();
                 lastPrint_dateTimestamp -= 60;
 
-                QSqlQuery select_query;
+                QSqlQuery select_query(print_schedule_db);
 
                 bool select_success = false;
                 select_success = select_query.exec(query_string.arg(current_hour).arg(current_minute));

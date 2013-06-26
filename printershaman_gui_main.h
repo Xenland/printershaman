@@ -100,10 +100,20 @@ public:
 
 
             QWidget * main_window_layout_printingScheduleScreen;
-
+            QGridLayout * printingSchedule_layout;
                 //Add "printing schedule" screen objects.
                 QTableView * printingSchedule_tableview;
                 QStandardItemModel  * printingSchedule_standarditemmodel;
+
+                //Group two buttons vertically (Remove datarow and Back to main menu)
+                QWidget * group_remove_mainmenu_btn_holder;
+                QVBoxLayout * group_remove_mainmenu_btn_layout;
+
+                    //Remove row (button)
+                    QPushButton * remove_row;
+
+                    //Main menu (button)
+                    QPushButton * back_to_main_menu;
 
 
     //Public Functions
@@ -112,6 +122,8 @@ public:
 
         //(Convience) Public Functions
         void mainWindow_autoreposition();
+        void printingSchedule_autoreposition();
+        void addNewSchedule_autoReposition();
 
         //Public Functions (Major Logic)
             //Helper functions

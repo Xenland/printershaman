@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/db">
+        <file alias="print_schedule">db/print_schedule</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file alias="add_new_schedule">images/add_new_schedule.png</file>
+        <file alias="icon_printer_shaman_logo_app_size">images/icon_printer_shaman_logo_app_size.png</file>
+        <file alias="printer_shaman_logo_app_size">images/printer_shaman_logo_app_size.png</file>
+    </qresource>
+</RCC>

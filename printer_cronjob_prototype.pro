@@ -17,3 +17,6 @@ SOURCES += main.cpp \
 
 HEADERS  += \
     printershaman_gui_main.h
+
+RESOURCES += \
+    resource.qrc
