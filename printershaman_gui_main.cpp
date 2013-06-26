@@ -1043,7 +1043,7 @@ void printershaman_gui_main::beginPrinterShaman(){
 
                                         qDebug() << query_string_update;
 
-                                        QSqlQuery update_query;
+                                        QSqlQuery update_query(print_schedule_db);
 
                                         bool update_success = false;
                                         update_success      = update_query.exec(query_string_update);
@@ -1085,7 +1085,7 @@ void printershaman_gui_main::beginPrinterShaman(){
 
 
 
-                QSqlQuery delete_query;
+                QSqlQuery delete_query(print_schedule_db);
 
                 bool update_success = false;
                 update_success      = delete_query.exec(query_string_delete);
