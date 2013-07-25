@@ -790,7 +790,8 @@ void printershaman_gui_main::beginPrinterShaman(){
                 printingSchedule_standarditemmodel->setHorizontalHeaderItem(2, new QStandardItem(QString("Copies")));
                 printingSchedule_standarditemmodel->setHorizontalHeaderItem(3, new QStandardItem(QString("URL/File Location")));
                 printingSchedule_standarditemmodel->setHorizontalHeaderItem(4, new QStandardItem(QString("Daily Time")));
-                printingSchedule_standarditemmodel->setHorizontalHeaderItem(5, new QStandardItem(QString("Months")));
+                printingSchedule_standarditemmodel->setHorizontalHeaderItem(5, new QStandardItem(QString("Months of the year")));
+                printingSchedule_standarditemmodel->setHorizontalHeaderItem(5, new QStandardItem(QString("Days of the week")));
 
 
                 printingSchedule_tableview->setModel(printingSchedule_standarditemmodel);
@@ -877,14 +878,14 @@ void printershaman_gui_main::beginPrinterShaman(){
                                     QStandardItem * url_location = new QStandardItem(select_query.value("url_location").toString());
                                     list_of_schedule_details.append(url_location);
 
-
-
                                     //Daily Time
                                         //Get hour and minutes and concat like (hh:mm)
                                         QString dailyTime_string(select_query.value("hour").toString()+":"+select_query.value("minutes").toString());
 
                                     QStandardItem * dailytime = new QStandardItem(dailyTime_string);
                                     list_of_schedule_details.append(dailytime);
+
+                                    //Days of the week
 
                                 printingSchedule_standarditemmodel->appendRow(list_of_schedule_details);
                             }
