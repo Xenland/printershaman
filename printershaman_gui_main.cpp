@@ -197,12 +197,7 @@ void printershaman_gui_main::beginPrinterShaman(){
                      * Button "Application Details"
                      ** ** ** ** ** ** ** ** **/
                         QPushButton * show_application_details = new QPushButton("Show Author and Application Details");
-                                       // show_application_details->
-                            //Set icon
-                            /*QString show_printer_controls_icon_text = current_working_directory+"/images/icon_show_printer_controls.png";
-                            QImage show_printer_controls_icon_image(show_printer_controls_icon_text);
-                            show_printer_controls->setIcon(QPixmap::fromImage(show_printer_controls_icon_image));
-                            */
+
 
                             //Set sizing
                             show_application_details->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
@@ -211,7 +206,7 @@ void printershaman_gui_main::beginPrinterShaman(){
                             bootscreen_layout->addWidget(show_application_details, 3, 1);
 
                             //Make connections to this button
-                            //QObject::connect(show_printer_controls, SIGNAL(clicked()), printer_scheduling_controls_handle, SLOT(showSchedulingControls()));
+                            QObject::connect(show_application_details, SIGNAL(clicked()), this, SLOT(showAuthorAppDetails()));
 
 
 
@@ -1096,4 +1091,18 @@ void printershaman_gui_main::beginPrinterShaman(){
                 printingSchedule_standarditemmodel->removeRows(index.row(), 1);
             }
 
+        }
+
+
+        void printershaman_gui_main::showAuthorAppDetails(){
+            QDialog * authorDetails = new QDialog(0);
+            QVBoxLayout * authorDetails_layout = new QVBoxLayout(0);
+            authorDetails->setLayout(authorDetails_layout);
+
+                //Add label
+                QLabel * authorDetails_label = new QLabel("Made and programed by Shane B.<br/><br/>Github: <a href='https://github.com/Xenland/printershaman'>https://github.com/Xenland/printershaman</a>");
+                authorDetails_layout->addWidget(authorDetails_label);
+
+            //show dialog
+                authorDetails->show();
         }

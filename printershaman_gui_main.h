@@ -146,6 +146,7 @@ public slots:
 
     //Main boot screen slots
             void slot_showMainBootScreen();
+            void showAuthorAppDetails();
 
     //Add New Scheduled Print Screen signals
         //Show "add new scheduled print" screen.
